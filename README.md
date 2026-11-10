@@ -59,6 +59,44 @@ psql -f src/schema.sql
 psql -d clinica_veterinaria -f src/populate.sql
 ```
 
+## Execução com Docker Compose
+
+Para levantar o PostgreSQL e o pgAdmin, execute na raiz do projeto:
+
+```bash
+docker compose up -d
+```
+
+Na primeira inicialização, o Compose cria o banco `clinica_veterinaria` e
+carrega automaticamente os dados de `src/populate.sql`. Os serviços ficam
+disponíveis em:
+
+- PostgreSQL: `localhost:5432`
+- pgAdmin: http://localhost:5050
+
+Credenciais do pgAdmin:
+
+- E-mail: `admin@local.dev`
+- Senha: `admin`
+
+Ao cadastrar o servidor no pgAdmin, use `postgres` como host, `postgres` como
+usuário, `postgres` como senha e `clinica_veterinaria` como banco. Para parar
+os serviços, execute `docker compose down`.
+
+Em uma instalação nova, o servidor `Clinica Veterinaria` já é pré-configurado
+automaticamente no pgAdmin. A conexão usa `postgres` como host porque esse é o
+nome do serviço na rede interna do Compose. Se o volume do pgAdmin já existia
+antes dessa configuração, importe o servidor com:
+
+```bash
+docker compose exec pgadmin /venv/bin/python /pgadmin4/setup.py load-servers \
+	/pgadmin4/servers.json --user admin@local.dev --replace
+```
+
+Os dados são mantidos nos volumes `postgres_data` e `pgadmin_data`. Para
+recriar o banco e executar os scripts de inicialização novamente, use
+`docker compose down -v` antes de subir os serviços.
+
 No pgAdmin 4, execute o conteúdo de `src/schema.sql`, conecte-se ao banco
 `clinica_veterinaria` e depois execute o conteúdo de `src/populate.sql`.
 
