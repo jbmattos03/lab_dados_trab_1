@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Modelo Relacional - Clínica Veterinária</title>
+<style>
+  @page { size: A4; margin: 15mm 16mm 17mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: #23364d; font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; line-height: 1.35; }
+  header { border-bottom: 2px solid #2d679b; padding-bottom: 5px; display: flex; justify-content: space-between; font-weight: bold; color: #24466a; font-size: 9pt; }
+  footer { display: none; }
+  h1 { margin: 26px 0 5px; text-align: center; color: #173c66; font-size: 25pt; letter-spacing: .3px; }
+  h2 { margin: 18px 0 8px; color: #173c66; font-size: 17pt; border-bottom: 2px solid #3978ad; padding-bottom: 3px; }
+  h3 { margin: 12px 0 5px; color: #28679d; font-size: 13pt; }
+  p { text-align: justify; margin: 6px 0; }
+  .subtitle { text-align: center; color: #28679d; font-size: 14pt; font-weight: bold; margin-bottom: 18px; }
+  .cover-grid { border: 1px solid #5485b0; display: grid; grid-template-columns: 1fr 1fr; margin-top: 10px; }
+  .cover-cell { padding: 8px 10px; border-bottom: 1px solid #b8c8d8; }
+  .cover-cell:nth-child(odd) { border-right: 1px solid #b8c8d8; }
+  .cover-cell:nth-last-child(-n+2) { border-bottom: 0; }
+  .cover-cell strong { color: #173c66; }
+  ul { margin-top: 5px; padding-left: 19px; }
+  li { margin: 5px 0; text-align: justify; }
+  .page { break-after: page; }
+  .page:last-child { break-after: auto; }
+  .figure { text-align: center; margin: 10px 0 4px; }
+  .figure img { width: 85%; max-height: 165mm; object-fit: contain; }
+  .caption { color: #6a788a; font-style: italic; margin-top: 3px; }
+  table { width: 100%; border-collapse: collapse; margin: 7px 0 13px; font-size: 8.5pt; }
+  th { background: #20456f; color: white; padding: 5px; text-align: left; }
+  td { border: 1px solid #c4cfda; padding: 4px 5px; vertical-align: top; }
+  tr:nth-child(even) td { background: #f2f6fa; }
+  .schema-title { margin-top: 9px; }
+  .note { background: #edf4fa; border-left: 4px solid #3978ad; padding: 8px 10px; margin: 9px 0; }
+  .small { font-size: 9pt; }
+  code { font-family: Consolas, monospace; color: #264f73; }
+</style>
+</head>
+<body>
+<header><span>MATB09 - MODELO RELACIONAL E ESQUEMA DE BANCO DE DADOS</span><span>SISTEMA DE GESTÃO DE CLÍNICA VETERINÁRIA</span></header>
+<footer><span>UFBA - Prof. Joselito Júnior | Grupo 01</span><span>Modelo relacional lógico</span></footer>
+
+<section class="page">
+  <h1>SISTEMA DE GESTÃO DE CLÍNICA VETERINÁRIA</h1>
+  <div class="subtitle">MODELO RELACIONAL LÓGICO E ESPECIFICAÇÃO DO ESQUEMA</div>
+  <div class="cover-grid">
+    <div class="cover-cell"><strong>Disciplina:</strong> MATB09 - Laboratório de Banco de Dados</div>
+    <div class="cover-cell"><strong>Professor:</strong> Joselito Júnior</div>
+    <div class="cover-cell"><strong>Data de entrega:</strong> 10/11/2026</div>
+    <div class="cover-cell"><strong>Modalidade:</strong> Grupo 01 - Clínica Veterinária</div>
+    <div class="cover-cell"><strong>Integrantes da equipe:</strong><br>1. Carolina Bastos Almeida (223116351)<br>2. Henrique Queiroz Scoppetta Sampaio (222215166)<br>3. Julia Brito Mattos (221115767)<br>4. Lucas Alves de Carvalho (225116243)<br>5. Márcio Santos Andrade (224116980)</div>
+    <div class="cover-cell"><strong>Ambiente e ferramentas:</strong><br>PostgreSQL 14+<br>pgAdmin 4<br>Linguagem SQL (DDL e DML)</div>
+  </div>
+  <h2>1. Apresentação do problema e regras de negócio</h2>
+  <p>Clínicas veterinárias precisam organizar o cadastro de tutores, animais, veterinários, consultas e procedimentos realizados. Sem um sistema estruturado, o histórico clínico e financeiro fica disperso, dificultando o acompanhamento dos pacientes, a agenda dos profissionais e a análise dos serviços prestados. O banco projetado centraliza essas informações e registra os vínculos entre os atendimentos e os procedimentos executados.</p>
+  <ul>
+    <li><strong>Regra de negócio 01 (Vínculo de responsabilidade):</strong> um cliente pode ser responsável por vários pacientes, mas cada paciente deve estar obrigatoriamente vinculado a um cliente cadastrado.</li>
+    <li><strong>Regra de negócio 02 (Agenda e status):</strong> cada consulta deve estar vinculada a exatamente um paciente e a um veterinário, e seu status deve ser <code>MARCADA</code>, <code>FINALIZADA</code> ou <code>CANCELADA</code>.</li>
+    <li><strong>Regra de negócio 03 (Procedimentos do atendimento):</strong> uma consulta pode conter vários procedimentos e um procedimento pode aparecer em várias consultas. A tabela associativa registra o valor cobrado e as observações de cada ocorrência.</li>
+  </ul>
+  <h2>2. Diagrama de tabelas</h2>
+  <p>O diagrama apresenta as seis tabelas do modelo, suas chaves primárias, chaves estrangeiras, restrições de unicidade e os relacionamentos 1:N e N:N resolvidos por tabela associativa.</p>
+</section>
+
+<section>
+  <div class="figure"><img src="../imgs/diagrama.png" alt="Diagrama relacional da clínica veterinária"><div class="caption">Figura 1: Diagrama ER com PKs, FKs, atributos e relacionamentos.</div></div>
+  <h2>3. Especificação do esquema de dados</h2>
+  <h3 class="schema-title">Tabela 1: Cliente (cadastro de tutores)</h3>
+  <table><tr><th>Coluna</th><th>Tipo de dado</th><th>Chave</th><th>Restrição</th><th>Descrição</th></tr><tr><td>id</td><td>INT</td><td>PK</td><td>IDENTITY</td><td>Identificador único do cliente</td></tr><tr><td>nome</td><td>VARCHAR(255)</td><td>-</td><td>NULL permitido</td><td>Nome do tutor responsável</td></tr><tr><td>cpf</td><td>VARCHAR(14)</td><td>-</td><td>UNIQUE</td><td>Documento de identificação do cliente</td></tr></table>
+  <h3>Tabela 2: Veterinario (profissionais da clínica)</h3>
+  <table><tr><th>Coluna</th><th>Tipo de dado</th><th>Chave</th><th>Restrição</th><th>Descrição</th></tr><tr><td>id</td><td>INT</td><td>PK</td><td>IDENTITY</td><td>Identificador do veterinário</td></tr><tr><td>nome</td><td>VARCHAR(255)</td><td>-</td><td>NOT NULL</td><td>Nome do profissional</td></tr><tr><td>cpf</td><td>VARCHAR(14)</td><td>-</td><td>UNIQUE</td><td>CPF do veterinário</td></tr><tr><td>crmv</td><td>VARCHAR(15)</td><td>-</td><td>UNIQUE</td><td>Registro profissional no CRMV</td></tr><tr><td>especialidade</td><td>VARCHAR(255)</td><td>-</td><td>NULL permitido</td><td>Área de atuação</td></tr></table>
+  <h3>Tabela 3: Paciente (animais atendidos)</h3>
+  <table><tr><th>Coluna</th><th>Tipo de dado</th><th>Chave</th><th>Restrição</th><th>Descrição</th></tr><tr><td>id</td><td>INT</td><td>PK</td><td>IDENTITY</td><td>Identificador do paciente</td></tr><tr><td>nome</td><td>VARCHAR(255)</td><td>-</td><td>NOT NULL</td><td>Nome do animal</td></tr><tr><td>especie</td><td>VARCHAR(255)</td><td>-</td><td>NULL permitido</td><td>Espécie do animal</td></tr><tr><td>raca</td><td>VARCHAR(255)</td><td>-</td><td>NULL permitido</td><td>Raça do animal</td></tr><tr><td>cliente_id</td><td>INT</td><td>FK</td><td>NOT NULL</td><td>Referência a Cliente(id)</td></tr></table>
+</section>
+
+<section class="page">
+  <h3 class="schema-title">Tabela 4: Consulta (atendimentos agendados)</h3>
+  <table><tr><th>Coluna</th><th>Tipo de dado</th><th>Chave</th><th>Restrição</th><th>Descrição</th></tr><tr><td>id</td><td>INT</td><td>PK</td><td>IDENTITY</td><td>Identificador da consulta</td></tr><tr><td>data_marcada</td><td>TIMESTAMP</td><td>-</td><td>NOT NULL</td><td>Data e hora agendadas</td></tr><tr><td>status</td><td>Status_Consulta</td><td>-</td><td>NOT NULL; DEFAULT MARCADA</td><td>Situação do atendimento</td></tr><tr><td>vet_id</td><td>INT</td><td>FK</td><td>NOT NULL</td><td>Referência a Veterinario(id)</td></tr><tr><td>paciente_id</td><td>INT</td><td>FK</td><td>NOT NULL</td><td>Referência a Paciente(id)</td></tr></table>
+  <h3>Tabela 5: Procedimento (serviços oferecidos)</h3>
+  <table><tr><th>Coluna</th><th>Tipo de dado</th><th>Chave</th><th>Restrição</th><th>Descrição</th></tr><tr><td>id</td><td>INT</td><td>PK</td><td>IDENTITY</td><td>Identificador do procedimento</td></tr><tr><td>nome</td><td>VARCHAR(255)</td><td>-</td><td>NOT NULL; UNIQUE</td><td>Nome do serviço</td></tr><tr><td>descricao</td><td>TEXT</td><td>-</td><td>NULL permitido</td><td>Detalhamento do procedimento</td></tr><tr><td>valor_base</td><td>DECIMAL(10,2)</td><td>-</td><td>NOT NULL</td><td>Valor de referência</td></tr></table>
+  <h3>Tabela 6: Procedimento_Consulta (associativa N:N)</h3>
+  <table><tr><th>Coluna</th><th>Tipo de dado</th><th>Chave</th><th>Restrição</th><th>Descrição</th></tr><tr><td>consulta_id</td><td>INT</td><td>FK</td><td>NOT NULL</td><td>Referência a Consulta(id)</td></tr><tr><td>procedimento_id</td><td>INT</td><td>FK</td><td>NOT NULL</td><td>Referência a Procedimento(id)</td></tr><tr><td>valor_cobrado</td><td>DECIMAL(10,2)</td><td>-</td><td>NOT NULL</td><td>Valor efetivamente cobrado</td></tr><tr><td>observacoes</td><td>TEXT</td><td>-</td><td>NULL permitido</td><td>Anotações sobre a execução</td></tr></table>
+  <div class="note"><strong>Índice:</strong> a tabela <code>Procedimento_Consulta</code> possui índice composto em <code>(consulta_id, procedimento_id)</code>, favorecendo a consulta dos procedimentos vinculados a cada atendimento.</div>
+  <h2>4. Justificativa das cardinalidades e estrutura relacional</h2>
+  <ol>
+    <li><strong>Cliente - Paciente (1:N):</strong> um cliente pode ser responsável por zero, um ou vários pacientes; cada paciente pertence obrigatoriamente a um único cliente. A relação é mantida por <code>Paciente.cliente_id</code>.</li>
+    <li><strong>Veterinario - Consulta (1:N):</strong> um veterinário pode realizar várias consultas; cada consulta possui um único veterinário responsável. A relação é mantida por <code>Consulta.vet_id</code>.</li>
+    <li><strong>Paciente - Consulta (1:N):</strong> um paciente pode possuir várias consultas ao longo do tempo; cada consulta corresponde a um único paciente. A relação é mantida por <code>Consulta.paciente_id</code>.</li>
+    <li><strong>Consulta - Procedimento (N:N via tabela associativa):</strong> uma consulta pode conter vários procedimentos e cada procedimento pode ser utilizado em diversas consultas. A tabela <code>Procedimento_Consulta</code> conecta as duas entidades e armazena atributos próprios do relacionamento.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>5. Dados de exemplo e cenários representados</h2>
+  <p>O arquivo <code>src/populate.sql</code> insere 25 registros coerentes: 3 clientes, 5 pacientes, 2 veterinários, 5 consultas, 4 procedimentos e 6 associações entre consultas e procedimentos.</p>
+  <ul>
+    <li>O cliente Ana Souza possui dois pacientes: Luna e Thor.</li>
+    <li>A paciente Luna possui duas consultas, mostrando uma entidade com vários registros relacionados.</li>
+    <li>A consulta de número 1 possui dois procedimentos associados.</li>
+    <li>O paciente Bidu não possui consultas e o procedimento Limpeza dentaria não possui associações, permitindo testar <code>LEFT JOIN</code>.</li>
+    <li>Os status das consultas incluem <code>FINALIZADA</code>, <code>MARCADA</code> e <code>CANCELADA</code>.</li>
+  </ul>
+  <div class="note"><strong>Execução:</strong> execute primeiro <code>src/schema.sql</code> em um banco PostgreSQL novo e vazio; depois conecte-se ao banco <code>clinica_veterinaria</code> e execute <code>src/populate.sql</code>.</div>
+  <p class="small">Este documento descreve o modelo implementado nos scripts atuais do projeto e acompanha o diagrama relacional já produzido.</p>
+</section>
+</body>
+</html>
