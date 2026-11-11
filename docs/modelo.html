@@ -59,7 +59,7 @@
     <li><strong>Regra de negócio 03 (Procedimentos do atendimento):</strong> uma consulta pode conter vários procedimentos e um procedimento pode aparecer em várias consultas. A tabela associativa registra o valor cobrado e as observações de cada ocorrência.</li>
   </ul>
   <h2>2. Diagrama de tabelas</h2>
-  <p>O diagrama apresenta as seis tabelas do modelo, suas chaves primárias, chaves estrangeiras, restrições de unicidade e os relacionamentos 1:N e N:N resolvidos por tabela associativa.</p>
+  <p>O diagrama apresenta as seis tabelas do modelo, suas chaves primárias, chaves estrangeiras, restrições de unicidade e os relacionamentos 1:N e N:N resolvidos por tabela associativa. Na tabela associativa, os campos <code>consulta_id</code> e <code>procedimento_id</code> são FKs e possuem índice composto, mas o esquema atual ainda não declara uma PK composta.</p>
 </section>
 
 <section>
@@ -79,14 +79,14 @@
   <h3>Tabela 5: Procedimento (serviços oferecidos)</h3>
   <table><tr><th>Coluna</th><th>Tipo de dado</th><th>Chave</th><th>Restrição</th><th>Descrição</th></tr><tr><td>id</td><td>INT</td><td>PK</td><td>IDENTITY</td><td>Identificador do procedimento</td></tr><tr><td>nome</td><td>VARCHAR(255)</td><td>-</td><td>NOT NULL; UNIQUE</td><td>Nome do serviço</td></tr><tr><td>descricao</td><td>TEXT</td><td>-</td><td>NULL permitido</td><td>Detalhamento do procedimento</td></tr><tr><td>valor_base</td><td>DECIMAL(10,2)</td><td>-</td><td>NOT NULL</td><td>Valor de referência</td></tr></table>
   <h3>Tabela 6: Procedimento_Consulta (associativa N:N)</h3>
-  <table><tr><th>Coluna</th><th>Tipo de dado</th><th>Chave</th><th>Restrição</th><th>Descrição</th></tr><tr><td>consulta_id</td><td>INT</td><td>FK</td><td>NOT NULL</td><td>Referência a Consulta(id)</td></tr><tr><td>procedimento_id</td><td>INT</td><td>FK</td><td>NOT NULL</td><td>Referência a Procedimento(id)</td></tr><tr><td>valor_cobrado</td><td>DECIMAL(10,2)</td><td>-</td><td>NOT NULL</td><td>Valor efetivamente cobrado</td></tr><tr><td>observacoes</td><td>TEXT</td><td>-</td><td>NULL permitido</td><td>Anotações sobre a execução</td></tr></table>
+  <table><tr><th>Coluna</th><th>Tipo de dado</th><th>Chave</th><th>Restrição</th><th>Descrição</th></tr><tr><td>consulta_id</td><td>INT</td><td>FK</td><td>NOT NULL</td><td>Referência a Consulta(id)</td></tr><tr><td>procedimento_id</td><td>INT</td><td>FK</td><td>NOT NULL</td><td>Referência a Procedimento(id)</td></tr><tr><td>valor_cobrado</td><td>DECIMAL(10,2)</td><td>-</td><td>NOT NULL</td><td>Valor efetivamente cobrado por ocorrência</td></tr><tr><td>observacoes</td><td>TEXT</td><td>-</td><td>NULL permitido</td><td>Anotações sobre a execução</td></tr></table>
   <div class="note"><strong>Índice:</strong> a tabela <code>Procedimento_Consulta</code> possui índice composto em <code>(consulta_id, procedimento_id)</code>, favorecendo a consulta dos procedimentos vinculados a cada atendimento.</div>
   <h2>4. Justificativa das cardinalidades e estrutura relacional</h2>
   <ol>
     <li><strong>Cliente - Paciente (1:N):</strong> um cliente pode ser responsável por zero, um ou vários pacientes; cada paciente pertence obrigatoriamente a um único cliente. A relação é mantida por <code>Paciente.cliente_id</code>.</li>
     <li><strong>Veterinario - Consulta (1:N):</strong> um veterinário pode realizar várias consultas; cada consulta possui um único veterinário responsável. A relação é mantida por <code>Consulta.vet_id</code>.</li>
     <li><strong>Paciente - Consulta (1:N):</strong> um paciente pode possuir várias consultas ao longo do tempo; cada consulta corresponde a um único paciente. A relação é mantida por <code>Consulta.paciente_id</code>.</li>
-    <li><strong>Consulta - Procedimento (N:N via tabela associativa):</strong> uma consulta pode conter vários procedimentos e cada procedimento pode ser utilizado em diversas consultas. A tabela <code>Procedimento_Consulta</code> conecta as duas entidades e armazena atributos próprios do relacionamento.</li>
+    <li><strong>Consulta - Procedimento (N:N via tabela associativa):</strong> uma consulta pode conter vários procedimentos e cada procedimento pode ser utilizado em diversas consultas. A tabela <code>Procedimento_Consulta</code> conecta as duas entidades, armazena atributos próprios do relacionamento e possui FKs para as duas tabelas.</li>
   </ol>
 </section>
 

@@ -37,7 +37,9 @@ da clínica.
 
 O modelo possui as tabelas `Cliente`, `Paciente`, `Veterinario`, `Consulta`,
 `Procedimento` e `Procedimento_Consulta`. O diagrama identifica as chaves
-primárias, chaves estrangeiras e os relacionamentos entre as entidades.
+primárias das entidades, as chaves estrangeiras e os relacionamentos. Na
+tabela associativa, `consulta_id` e `procedimento_id` são FKs e há um índice
+composto nesses campos, mas o esquema atual ainda não declara uma PK composta.
 
 ![Diagrama do banco de dados](imgs/diagrama.png)
 
@@ -120,3 +122,11 @@ Há entidades sem correspondência para testar consultas com `LEFT JOIN`: o
 paciente Bidu não possui consultas e o procedimento Limpeza dentaria não está
 associado a nenhuma consulta. Consultas com `INNER JOIN` retornam somente os
 registros que possuem relacionamentos correspondentes.
+
+## Estado das consultas obrigatórias
+
+O arquivo [`src/queries.sql`](src/queries.sql) contém Q1 com `WHERE` e
+`ORDER BY`, e Q2 com `INNER JOIN`. Q3 possui apenas o título, sem o `LEFT
+JOIN` correspondente. Q4 também possui apenas o título; a consulta existente
+calcula a soma de `valor_base` por consulta, mas o esquema atual não possui
+uma coluna de quantidade para calcular `quantidade x valor unitário`.
